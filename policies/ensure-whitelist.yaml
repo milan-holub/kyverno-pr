@@ -28,4 +28,4 @@ spec:
           all:
             - key: "{{request.object.spec.endpoints[].metricRelabelings[?action=='keep'][] || `[]` | length(@)}}"
               operator: LessThan
-              value: 2
+              value: 1
