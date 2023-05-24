@@ -4,4 +4,7 @@
   kyverno apply policies/ -r resources/
 #+end_src
 * as a PR check via gh action
-- see [[file:.github/workflows/kyverno.yaml][.github/workflows/kyverno.yaml]]
+If you want to add similar check in your github repo then:
+1. put your k8s resources to [[file:resources/][./resources]]
+2. ensure applicable kyverno policies are present in [[file:policies/][./policies]]
+3. use [[file:.github/workflows/kyverno.yaml][.github/workflows/kyverno.yaml]] 
