@@ -1,0 +1,7 @@
+#+TITLE: Kyverno policy test
+* manually
+#+begin_src /bin/bash
+  kyverno apply policies/ -r resources/
+#+end_src
+* as a PR check via gh action
+- see [[file:.github/workflows/kyverno.yaml][.github/workflows/kyverno.yaml]]
