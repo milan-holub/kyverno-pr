@@ -1,0 +1,31 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-whitelist-on-servicemonitor
+  annotations:
+    policies.kyverno.io/title: Require Whitelist on ServiceMonitor
+    policies.kyverno.io/category: Monitoring
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: ServiceMonitor
+    policies.kyverno.io/description: >-
+      This policy validates that the the whitelisting is used in every
+      ServiceMonitor.
+spec:
+  validationFailureAction: audit
+  background: true
+  rules:
+  - name: check-for-whitelist
+    match:
+      any:
+      - resources:
+          kinds:
+          - ServiceMonitor
+    validate:
+      message: "Whitelist metrics is not used."
+      deny:
+        conditions:
+          all:
+            - key: "{{request.object.spec.endpoints[].metricRelabelings[?action=='keep'][] || `[]` | length(@)}}"
+              operator: LessThan
+              value: 2

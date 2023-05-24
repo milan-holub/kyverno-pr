@@ -1,0 +1,31 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-labels-on-servicemonitor
+  annotations:
+    policies.kyverno.io/title: Require Labels on ServiceMonitor
+    policies.kyverno.io/category: Monitoring
+    policies.kyverno.io/minversion: 1.6.0
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/subject: ServiceMonitor
+    policies.kyverno.io/description: >-
+      This policy validates that the listed labels get applied to metrics for
+      every ServiceMonitor.
+spec:
+  validationFailureAction: audit
+  background: true
+  rules:
+  - name: check-for-labels
+    match:
+      any:
+      - resources:
+          kinds:
+          - ServiceMonitor
+    validate:
+      message: "Not all required labels present. Required labels are: team, product, service."
+      deny:
+        conditions:
+          all:
+            - key: "{{request.object.spec.endpoints[].metricRelabelings[?action=='replace' && (targetLabel=='team' || targetLabel=='product' || targetLabel=='service')][] || `[]` | length(@)}}"
+              operator: NotEquals
+              value: 3
