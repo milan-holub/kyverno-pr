@@ -1,0 +1,43 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  annotations:
+  labelsmetricRelabelings:
+    app: monitoring-node-exporter
+    chart: monitoring-node-exporter-0.1.10
+    component: node-exporter
+    heritage: Helm
+    release: wandera
+    team: observability
+    product: node-exporter
+    service: node-exporter-service
+  name: node-exporter-not-compliant
+  namespace: monitoring
+spec:
+  endpoints:
+  - interval: 30s
+    metricRelabelings:
+    - action: replace
+      targetLabel: team
+      replacement: observability
+    - action: replace
+      targetLabel: service
+      replacement: node-exporter-servcie
+    - action: keep
+      regex: (node_load.*)
+      sourceLabels:
+      - __name__
+    relabelings:
+    - action: replace
+      sourceLabels:
+      - __meta_kubernetes_pod_node_name
+      targetLabel: node
+    scheme: http
+  jobLabel: component
+  namespaceSelector:
+    matchNames:
+    - monitoring
+  selector:
+    matchLabels:
+      app: monitoring-node-exporter
+      component: node-exporter
